@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/wrfchem/!svn/ver/746/branches/amt/chem/KPP/mechanisms/cbm4
+END
+cbm4.def
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/wrfchem/!svn/ver/746/branches/amt/chem/KPP/mechanisms/cbm4/cbm4.def
+END
+cbm4_wrfkpp.equiv
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/wrfchem/!svn/ver/746/branches/amt/chem/KPP/mechanisms/cbm4/cbm4_wrfkpp.equiv
+END
+cbm4.eqn
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/wrfchem/!svn/ver/746/branches/amt/chem/KPP/mechanisms/cbm4/cbm4.eqn
+END
+cbm4.def.org
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/wrfchem/!svn/ver/746/branches/amt/chem/KPP/mechanisms/cbm4/cbm4.def.org
+END
+cbm4.spc
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/wrfchem/!svn/ver/746/branches/amt/chem/KPP/mechanisms/cbm4/cbm4.spc
+END
+atoms_red
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/wrfchem/!svn/ver/356/branches/amt/chem/KPP/mechanisms/cbm4/atoms_red
+END
+cbm4.kpp
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/wrfchem/!svn/ver/746/branches/amt/chem/KPP/mechanisms/cbm4/cbm4.kpp
+END

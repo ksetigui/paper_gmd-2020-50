@@ -1,0 +1,106 @@
+! lm April 2015 Louis Marelle, for LATMOS/TOTAL SA.
+! Some of this is based on module_cbmz_addemiss.F
+! Add DMS emissions to the modified SAPRC/MOSAIC, 8bin, VBS, AQ mechanism
+
+MODULE module_saprc_dmsemis
+
+CONTAINS
+
+!----------------------------------------------------------------------
+   subroutine saprc_dmsemis( id, dtstep, dz8w, config_flags,       &
+               rho_phy, chem,emis_ant,alt,                                &
+               u10, v10, lu_index, tsk,                                   &
+               ids,ide, jds,jde, kds,kde,                                 &
+               ims,ime, jms,jme, kms,kme,                                 &
+               its,ite, jts,jte, kts,kte                                  )
+!
+! calculates and adds emissions for saprc dms
+! (i.e., emissions tendencies over time dtstep are applied 
+! to the trace gas concentrations)
+!
+
+  USE module_configure
+  USE module_state_description
+  USE module_data_radm2
+
+  IMPLICIT NONE
+
+   TYPE(grid_config_rec_type),  INTENT(IN   )    :: config_flags
+
+   INTEGER,      INTENT(IN   ) :: id,                                      &
+                                  ids,ide, jds,jde, kds,kde,               &
+                                  ims,ime, jms,jme, kms,kme,               &
+                                  its,ite, jts,jte, kts,kte
+
+   REAL, INTENT(IN   ) ::    dtstep
+
+! trace species mixing ratios (gases=ppm)
+   REAL, DIMENSION( ims:ime, kms:kme, jms:jme, num_chem ),                 &
+         INTENT(INOUT ) ::   chem
+!
+! emissions arrays (v.1: ppm m/min; v.2: mole km^-2 hr^-1)
+!
+!   REAL, DIMENSION( ims:ime, kms:kme, jms:jme ),                          &
+   REAL, DIMENSION( ims:ime, kms:config_flags%kemit, jms:jme,num_emis_ant),&
+         INTENT(IN ) ::                                                    &
+                         emis_ant
+! layer thickness (m)
+   REAL,  DIMENSION( ims:ime , kms:kme , jms:jme )         ,               &
+          INTENT(IN   ) ::   dz8w, rho_phy,alt
+
+   REAL,  DIMENSION( ims:ime , jms:jme )         ,               &
+          INTENT(IN   ) ::   u10, v10, lu_index, tsk
+
+! local variables
+   integer :: i,j,k
+   real :: conv
+! sfc ocean value in mol/m^3, from Lana et. al 2011
+! This is an average value for Europe in April, the best thing would be to read 
+! the dms_ocean values from the wrfchemi emissions (build a Lana et al. / wrf interface)
+! sc_co2 schmidt number for co2 at 20°C = 600 (reference value)
+   real :: w10, dms_emi, k_dms, dms_ocean_sfc = 5e-6, sc_co2 = 600, sc_dms, &
+                sst_ij_cels
+
+!       
+! add emissions
+!
+
+   do j=jts,jte  
+      do i=its,ite 
+
+         conv = 4.828e-4/rho_phy(i,kts,j)*dtstep/(dz8w(i,kts,j)*60.)
+         
+         !lm 10/2014, adding DMS emissions
+         ! Nightingale et al., 2000 parameterization using a Schmidt number 
+         ! for DMS depending on the actual SST
+             ! only over open water (lu_index==16)
+             if (lu_index(i,j) == 16) then
+                 ! Wind speed in m s-1
+                 w10 = sqrt( u10(i,j)** 2 + v10(i,j)** 2 )
+                 ! Convert sst (=tskin at sea surface) to celsius. The Schmidt 
+                 ! number parameterization is only valid between 5 and 30 °C, 
+                 ! so constrain the SST between those two values
+                 sst_ij_cels = ( tsk(i,j) - 273.15 )
+                 if (sst_ij_cels < 5) sst_ij_cels = 5
+                 if (sst_ij_cels > 30) sst_ij_cels = 30
+                 ! Schmidt number for DMS, using the sst in celsius, from
+                 ! Saltzman et al., 1993
+                 sc_dms = 2674.0 - 147.12 * sst_ij_cels + 3.726 * sst_ij_cels ** 2 &
+                             - 0.038 * sst_ij_cels ** 3
+                 ! Sea - air exchange coefficient from Nightingale et al. 2000, 
+                 ! and unit change from cm hr-1 to m s-1
+                 k_dms = ( 0.222 * w10**2 + 0.333 * w10) * (sc_dms / sc_co2)**(-0.5) / 3600. / 100.
+                 ! DMS emission flux in SI units (mol m-2 s-1)
+                 dms_emi = k_dms * dms_ocean_sfc
+                 ! Change to  WRF-Chem units (mol km-2 hr-1)
+                 dms_emi = dms_emi * 1e6 * 3600
+                 ! Add emissions to chem, at the surface (k==kts)
+                 chem(i,kts,j,p_dms)  =  chem(i,kts,j,p_dms)               &
+                             +dms_emi*conv
+             end if
+      end do 
+   end do
+
+END subroutine saprc_dmsemis
+
+END MODULE module_saprc_dmsemis

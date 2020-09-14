@@ -1,0 +1,142 @@
+    module module_mosaic_settling
+    contains
+    subroutine mosaic_settling_driver( &
+        t_phy, rho_phy, chem, &
+        ids,ide, jds,jde, kds,kde, &
+        ims,ime, jms,jme, kms,kme, &
+        its,ite, jts,jte, kts,kte )
+    use module_data_mosaic_asect, only: &
+        dens_water_aer, mw_water_aer, dens_aer, &
+        dlo_sect, dcen_sect, dhi_sect, volumlo_sect, &
+        volumhi_sect, ai_phase, ncomp_aer, nsize_aer, ntype_aer, &
+        numptr_aer, waterptr_aer, massptr_aer, &
+        lptr_oin_aer
+    use module_configure, only: num_chem
+    implicit none
+    integer, intent(in) :: &
+        ids, ide, jds, jde, kds, kde, &
+        ims, ime, jms, jme, kms, kme, &
+        its, ite, jts, jte, kts, kte
+    real, intent(in), &
+        dimension( ims:ime, kms:kme, jms:jme ) :: &
+        t_phy, rho_phy
+    real, intent(inout), &
+        dimension( ims:ime, kms:kme, jms:jme, 1:num_chem ) :: &
+        chem
+    integer it, jt, idiagaa
+    integer iphase, itype, n, ll, l1
+    real(r8) :: temp
+    real(r8) :: airdens
+    real dumalnsg, dumfact, dumass
+    real rnum
+    real wetdgnum, wetdp, wetdens, wetmass, wetvol, &
+         drydp, drydens, drymass, dryvol
+    real, parameter :: densdefault = 2.0
+    real, parameter :: smallmassaa = 1.0e-19
+    real, parameter :: smallmassbb = 1.0e-29
+    real, parameter :: piover6 = pi/6.0
+    real, parameter :: onethird = 1.0/3.0
+    do jt = jts, jte
+    do it = its, ite
+    dumalnsg = log( 1.0 )
+    iphase = ai_phase
+    do itype = 1, ntype_aer
+    do n = 1, nsize_aer(itype)
+    do kt = kts:kte
+      dryvol = 0.0
+      drymass = 0.0
+      do ll = 1, ncomp_aer(itype)
+          l1 = massptr_aer(ll,n,itype,iphase)
+          dummass = chem(it,kt,jt,l1)*1000.
+          drymass = drymass + dummass
+          dryvol = dryvol + dummass/dens_aer(ll,itype)
+      end do
+      l1 = waterptr_aer(n,itype)
+      dummass = chem(it,kt,jt,l1)*1000.
+      wetmass = drymass + dummass
+      wetvol = dryvol + dummass/dens_water_aer
+      l1 = numptr_aer(n,itype,iphase)
+      rnum = chem(it,kt,jt,l1)*1000.
+      if (drymass .le. smallmassbb) then
+          drydp = dcen_sect(n,itype)
+          drydens = densdefault
+          wetdp = drydp
+          wetdens = drydens
+      else
+          if (drymass .le. smallmassaa) then
+              wetmass = drymass
+              wetvol = dryvol
+          end if
+          drydens = drymass/dryvol
+          wetdens = wetmass/wetvol
+          if (rnum .ge. dryvol/volumlo_sect(n,itype)) then
+              drydp = dlo_sect(n,itype)
+          else if (rnum .le. dryvol/volumhi_sect(n,itype)) then
+              drydp = dhi_sect(n,itype)
+          else
+              drydp = (dryvol/(piover6*rnum))**onethird
+          end if
+          if(abs(wetvol).gt.(1000.*abs(dryvol))) then
+              dumfact=10.0
+          else
+              dumfact=abs(wetvol/dryvol)**onethird
+              dumfact=max(1.0,min(dumfact,10.0))
+          endif
+          wetdp = drydp*dumfact
+      endif
+      wetdgnum = wetdp * exp( -1.5*dumalnsg*dumalnsg )
+      temp = t_phy(it,kt,jt)
+      airdens = rho_phy(it,kt,jt)*1.0e-3
+      call aerosol_depvel_lm( &
+           wetdgnum, dumalnsg, wetdens, &
+           temp, airdens, &
+           vsettl_0, vsettl_3)
+      idiagaa = 1
+      if (idiagaa>0) print 9310, it, jt, kt, n, itype, iphase, &
+          dcen_sect(n,itype), drydp, wetdp, &
+          drydens, wetdens, vsettl_3, &
+          vsettl_0
+      9310 format( 'aerdep', 3i4, 3i3, 1p, 3e10.2, &
+            2x, 0p, 2f5.2, 2x, 1p, 2e10.2 )
+    end do
+    end do
+    end do
+    end do
+    end do
+    end subroutine mosaic_settling_driver
+    subroutine aerosol_depvel_lm( &
+              dgnum, alnsg, aerodens, &
+              temp, airdens, &
+              vsettl_0, vsettl_3 )
+    implicit none
+    real, intent(in) :: &
+        temp, airdens
+    real, intent(in), &
+        dgnum, alnsg, aerodens
+    real, intent(out) ::
+          vsettl_0, vsettl_3
+    real airkinvisc
+    real freepath
+    real xknudsen, xknudsenfact, alnsg2, &
+          vsettl_dgnum, aerodiffus_dgnum
+    real pi
+    parameter (pi = 3.1415926536)
+    real gravity
+    parameter (gravity = 980.616)
+    real boltzmann
+    parameter (boltzmann = 1.3807e-16)
+    airkinvisc = ( 1.8325e-4 * (416.16/(temp+120.0)) * &
+                      ((temp/296.16)**1.5) ) / airdens
+    freepath = 7.39758e-4 * airkinvisc / sqrt(temp)
+    xknudsen = 2.*freepath/dgnum
+    xknudsenfact = xknudsen*1.246
+    alnsg2 = alnsg*alnsg
+    vsettl_dgnum = (gravity*aerodens*dgnum*dgnum)/ &
+              (18.*airkinvisc*airdens)
+    vsettl_0 = vsettl_dgnum * &
+              ( exp(2.*alnsg2) + xknudsenfact*exp(0.5*alnsg2) )
+    vsettl_3 = vsettl_dgnum * &
+              ( exp(8.*alnsg2) + xknudsenfact*exp(3.5*alnsg2) )
+    return
+    end subroutine aerosol_depvel_lm
+    end module module_mosaic_settling

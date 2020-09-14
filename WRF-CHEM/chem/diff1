@@ -1,0 +1,202 @@
+29,32d28
+< !   5/21/2014  raz - updated subr. aerosol_phase_state and function aerosol_water. 
+< !                    All particles are forced to be metastable (or stable) for RH > 35%
+< !                    OC (POA), SOA, OIN, BC are now included in water content calculation using kappa-Kohler theory.
+< !                    The kappa values are hardcoded in function aerosol_water.
+2797,2798c2793
+< ! update: 21 may 2014 - revised code to force metastable or stable state (upper curve) for RH > 35%
+< ! 
+---
+> ! update: jan 2005
+2846,2847c2841
+<       jdum = 1 ! 1 = forced metastable. 0 = maybe stable               ! RAZ 5/21/2014
+<       if(water_a_hyst(ibin) .gt. 0.5*water_a_up(ibin) .or. jdum .eq. 1)then
+---
+>       if(water_a_hyst(ibin) .gt. 0.5*water_a_up(ibin))then
+2851,2866c2845,2860
+< !       sum_soluble = 0.0
+< !       do js = 1, nsoluble
+< !         sum_soluble = sum_soluble + electrolyte(js,jtotal,ibin)
+< !       enddo
+< !
+< !       solids = electrolyte(jcaso4,jtotal,ibin) +   &
+< !                electrolyte(jcaco3,jtotal,ibin) +   &
+< !                aer(ioin_a ,jtotal,ibin)
+< !
+< !
+< !       if(sum_soluble .lt. 1.e-15 .and. solids .gt. 0.0)then
+< !
+< !         jaerosolstate(ibin) = all_solid ! no soluble material present
+< !         jphase(ibin) = jsolid
+< !         call adjust_solid_aerosol(ibin)
+< !
+---
+>         sum_soluble = 0.0
+>         do js = 1, nsoluble
+>           sum_soluble = sum_soluble + electrolyte(js,jtotal,ibin)
+>         enddo
+> 
+>         solids = electrolyte(jcaso4,jtotal,ibin) +   &
+>                  electrolyte(jcaco3,jtotal,ibin) +   &
+>                  aer(ioin_a ,jtotal,ibin)
+> 
+> 
+>         if(sum_soluble .lt. 1.e-15 .and. solids .gt. 0.0)then
+> 
+>           jaerosolstate(ibin) = all_solid ! no soluble material present
+>           jphase(ibin) = jsolid
+>           call adjust_solid_aerosol(ibin)
+> 
+2868,2874c2862,2868
+< !         mass_wet_a(ibin) = mass_dry_a(ibin) + water_a(ibin)*1.e-3	! g/cc(air)
+< !         vol_wet_a(ibin)  = vol_dry_a(ibin) + water_a(ibin)*1.e-3	! cc(aer)/cc(air) or m^3/m^3(air)
+< !         growth_factor(ibin) = mass_wet_a(ibin)/mass_dry_a(ibin)	! mass growth factor
+< !
+< !         return
+< !
+< !       elseif(sum_soluble .gt. 0.0 .and. solids .eq. 0.0)then
+---
+>           mass_wet_a(ibin) = mass_dry_a(ibin) + water_a(ibin)*1.e-3	! g/cc(air)
+>           vol_wet_a(ibin)  = vol_dry_a(ibin) + water_a(ibin)*1.e-3	! cc(aer)/cc(air) or m^3/m^3(air)
+>           growth_factor(ibin) = mass_wet_a(ibin)/mass_dry_a(ibin)	! mass growth factor
+> 
+>           return
+> 
+>         elseif(sum_soluble .gt. 0.0 .and. solids .eq. 0.0)then
+2881c2875
+<           if(water_a(ibin) .le. 0.0)then    ! one last attempt to catch bad input
+---
+>           if(water_a(ibin) .lt. 0.0)then
+2898c2892
+< !       endif
+---
+>         endif
+15673,15680c15667,15670
+<       po_soa(ibiog1_c_g) = fn_po(9.91d-7, 106.0d0, T_K) ! [Pascal]
+<       po_soa(ibiog2_c_g) = fn_po(9.91d-6, 100.0d0, T_K) ! [Pascal]
+<       po_soa(ibiog3_c_g) = fn_po(9.91d-5, 94.0d0, T_K) ! [Pascal]
+<       po_soa(ibiog4_c_g) = fn_po(9.91d-4, 88.0d0, T_K) ! [Pascal]
+<       po_soa(iant1_c_g) = fn_po(9.91d-7, 106.0d0, T_K) ! [Pascal]
+<       po_soa(iant2_c_g) = fn_po(9.91d-6, 100.0d0, T_K) ! [Pascal]
+<       po_soa(iant3_c_g) = fn_po(9.91d-5, 94.0d0, T_K) ! [Pascal]
+<       po_soa(iant4_c_g) = fn_po(9.91d-4, 88.0d0, T_K) ! [Pascal]
+---
+>       po_soa(iant1_c_g) = fn_po(9.91d-6, 83.0d0, T_K) ! [Pascal]
+>       po_soa(iant1_o_g) = fn_po(9.91d-6, 83.0d0, T_K) ! [Pascal]
+>       po_soa(ibiog1_c_g) = fn_po(9.91d-6, 83.0d0, T_K) ! [Pascal]
+>       po_soa(ibiog1_o_g) = fn_po(9.91d-6, 83.0d0, T_K) ! [Pascal]
+15852,15854d15841
+< !
+< ! RAZ 5/21/2014: Included organics, oin, and bc in water absorption (but does not include organic-inorganic interactions)
+< !
+15862,15863c15849
+<       real(kind=8) dum, kappa_poa, kappa_bc, kappa_soa, kappa_oin
+<       real(kind=8) aer_soa
+---
+>       real(kind=8) dum
+15868,15958d15853
+<       kappa_poa = 0.0001
+<       kappa_bc  = 0.0001
+<       kappa_soa = 0.1
+<       kappa_oin = 0.06
+< 
+<       aer_soa = aer(ipcg1_b_c_a,jtotal,ibin) + &
+<                 aer(ipcg2_b_c_a,jtotal,ibin) + &
+<                 aer(ipcg3_b_c_a,jtotal,ibin) + &
+<                 aer(ipcg4_b_c_a,jtotal,ibin) + &
+<                 aer(ipcg5_b_c_a,jtotal,ibin) + &
+<                 aer(ipcg6_b_c_a,jtotal,ibin) + &
+<                 aer(ipcg7_b_c_a,jtotal,ibin) + &
+<                 aer(ipcg8_b_c_a,jtotal,ibin) + &
+<                 aer(ipcg9_b_c_a,jtotal,ibin) + &
+<                 aer(ipcg1_b_o_a,jtotal,ibin) + &
+<                 aer(ipcg2_b_o_a,jtotal,ibin) + &
+<                 aer(ipcg3_b_o_a,jtotal,ibin) + &
+<                 aer(ipcg4_b_o_a,jtotal,ibin) + &
+<                 aer(ipcg5_b_o_a,jtotal,ibin) + &
+<                 aer(ipcg6_b_o_a,jtotal,ibin) + &
+<                 aer(ipcg7_b_o_a,jtotal,ibin) + &
+<                 aer(ipcg8_b_o_a,jtotal,ibin) + &
+<                 aer(ipcg9_b_o_a,jtotal,ibin) + &
+<                 aer(iopcg1_b_c_a,jtotal,ibin) + &
+<                 aer(iopcg2_b_c_a,jtotal,ibin) + &
+<                 aer(iopcg3_b_c_a,jtotal,ibin) + &
+<                 aer(iopcg4_b_c_a,jtotal,ibin) + &
+<                 aer(iopcg5_b_c_a,jtotal,ibin) + &
+<                 aer(iopcg6_b_c_a,jtotal,ibin) + &
+<                 aer(iopcg7_b_c_a,jtotal,ibin) + &
+<                 aer(iopcg8_b_c_a,jtotal,ibin) + &
+<                 aer(iopcg1_b_o_a,jtotal,ibin) + &
+<                 aer(iopcg2_b_o_a,jtotal,ibin) + &
+<                 aer(iopcg3_b_o_a,jtotal,ibin) + &
+<                 aer(iopcg4_b_o_a,jtotal,ibin) + &
+<                 aer(iopcg5_b_o_a,jtotal,ibin) + &
+<                 aer(iopcg6_b_o_a,jtotal,ibin) + &
+<                 aer(iopcg7_b_o_a,jtotal,ibin) + &
+<                 aer(iopcg8_b_o_a,jtotal,ibin) + &
+<                 aer(ipcg1_f_c_a,jtotal,ibin) + &
+<                 aer(ipcg2_f_c_a,jtotal,ibin) + &
+<                 aer(ipcg3_f_c_a,jtotal,ibin) + &
+<                 aer(ipcg4_f_c_a,jtotal,ibin) + &
+<                 aer(ipcg5_f_c_a,jtotal,ibin) + &
+<                 aer(ipcg6_f_c_a,jtotal,ibin) + &
+<                 aer(ipcg7_f_c_a,jtotal,ibin) + &
+<                 aer(ipcg8_f_c_a,jtotal,ibin) + &
+<                 aer(ipcg9_f_c_a,jtotal,ibin) + &
+<                 aer(ipcg1_f_o_a,jtotal,ibin) + &
+<                 aer(ipcg2_f_o_a,jtotal,ibin) + &
+<                 aer(ipcg3_f_o_a,jtotal,ibin) + &
+<                 aer(ipcg4_f_o_a,jtotal,ibin) + &
+<                 aer(ipcg5_f_o_a,jtotal,ibin) + &
+<                 aer(ipcg6_f_o_a,jtotal,ibin) + &
+<                 aer(ipcg7_f_o_a,jtotal,ibin) + &
+<                 aer(ipcg8_f_o_a,jtotal,ibin) + &
+<                 aer(ipcg9_f_o_a,jtotal,ibin) + &
+<                 aer(iopcg1_f_c_a,jtotal,ibin) + &
+<                 aer(iopcg2_f_c_a,jtotal,ibin) + &
+<                 aer(iopcg3_f_c_a,jtotal,ibin) + &
+<                 aer(iopcg4_f_c_a,jtotal,ibin) + &
+<                 aer(iopcg5_f_c_a,jtotal,ibin) + &
+<                 aer(iopcg6_f_c_a,jtotal,ibin) + &
+<                 aer(iopcg7_f_c_a,jtotal,ibin) + &
+<                 aer(iopcg8_f_c_a,jtotal,ibin) + &
+<                 aer(iopcg1_f_o_a,jtotal,ibin) + &
+<                 aer(iopcg2_f_o_a,jtotal,ibin) + &
+<                 aer(iopcg3_f_o_a,jtotal,ibin) + &
+<                 aer(iopcg4_f_o_a,jtotal,ibin) + &
+<                 aer(iopcg5_f_o_a,jtotal,ibin) + &
+<                 aer(iopcg6_f_o_a,jtotal,ibin) + &
+<                 aer(iopcg7_f_o_a,jtotal,ibin) + &
+<                 aer(iopcg8_f_o_a,jtotal,ibin) + &
+<                 aer(ismpa_a,jtotal,ibin) + &
+<                 aer(ismpbb_a,jtotal,ibin) + &
+<                 aer(iant1_c_a,jtotal,ibin) + &
+<                 aer(iant2_c_a,jtotal,ibin) + &
+<                 aer(iant3_c_a,jtotal,ibin) + &
+<                 aer(iant4_c_a,jtotal,ibin) + &
+<                 aer(iant1_o_a,jtotal,ibin) + &
+<                 aer(iant2_o_a,jtotal,ibin) + &
+<                 aer(iant3_o_a,jtotal,ibin) + &
+<                 aer(iant4_o_a,jtotal,ibin) + &
+<                 aer(ibiog1_c_a,jtotal,ibin) + &
+<                 aer(ibiog2_c_a,jtotal,ibin) + &
+<                 aer(ibiog3_c_a,jtotal,ibin) + &
+<                 aer(ibiog4_c_a,jtotal,ibin) + &
+<                 aer(ibiog1_o_a,jtotal,ibin) + &
+<                 aer(ibiog2_o_a,jtotal,ibin) + &
+<                 aer(ibiog3_o_a,jtotal,ibin) + &
+<                 aer(ibiog4_o_a,jtotal,ibin)
+15962c15857
+<         dum = dum + electrolyte(je,jp,ibin)/bin_molality(je,ibin)
+---
+>         dum = dum + 1.e-9*electrolyte(je,jp,ibin)/bin_molality(je,ibin)
+15965,15971c15860
+<       dum = dum + &
+<             1e-3*((aer(ioc_a,jtotal,ibin)*mw_aer_mac(ioc_a)/dens_aer_mac(ioc_a))*kappa_poa*aH2O_a(ibin)/(1.0-aH2O_a(ibin)) + &
+<             (aer(ibc_a,jtotal,ibin)/dens_aer_mac(ibc_a))*kappa_bc*aH2O_a(ibin)/(1.0-aH2O_a(ibin))  + &
+<             (aer(ioin_a,jtotal,ibin)/dens_aer_mac(ioin_a))*kappa_oin*aH2O_a(ibin)/(1.0-aH2O_a(ibin)) + &
+<             (aer_soa*mw_aer_mac(ipcg1_b_c_a)/dens_aer_mac(ipcg1_b_c_a))*kappa_soa*aH2O_a(ibin)/(1.0-aH2O_a(ibin)))
+< 
+<       aerosol_water = dum*1.e-9  ! kg(water)/m^3(air)
+---
+>       aerosol_water = dum

@@ -1,0 +1,10 @@
+Rate constants in Carter et al. don't always correspond to the numbers here.
+
+Carter Arhenius or k constants: A is the same unit than Kpp, Ea is in kcal/mol
+KPP B is Ea/R, where R = 8.314472 SI
+
+1 kcal = 4184 J
+
+Carter to KPP: Ea * 4184 / 8.314472
+
+ 

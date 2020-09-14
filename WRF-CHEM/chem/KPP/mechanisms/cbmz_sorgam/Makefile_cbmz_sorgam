@@ -1,0 +1,160 @@
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# User: Set here the F90 compiler and options
+#       Pedefined compilers: INTEL, PGF, HPUX, LAHEY
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+COMPILER = GNU
+#COMPILER = LAHEY
+#COMPILER = INTEL
+#COMPILER = PGF
+#COMPILER = HPUX
+
+FC_GNU     = g95
+FOPT_GNU   = -cpp -O -pg -fbounds-check 
+FC_LAHEY   = lf95
+FOPT_LAHEY = -Cpp --pca
+#FOPT_LAHEY = -Cpp --chk a,e,s,u --pca --ap -O0 -g --trap
+FC_INTEL   = ifort 
+FOPT_INTEL = -cpp -O -mp -pc80 -prec_div -tpp7 -implicitnone
+FC_PGF     = pgf90
+FOPT_PGF   = -Mpreprocess -O -fast -pc 80 -Kieee
+FC_HPUX    = f90
+FOPT_HPUX  = -O -u +Oall +check=on
+
+# define FULL_ALGEBRA for non-sparse integration
+FC   = $(FC_$(COMPILER))
+FOPT = $(FOPT_$(COMPILER)) # -DFULL_ALGEBRA
+
+LIBS =
+#LIBS = -llapack -lblas
+
+# Command to create Matlab mex gateway routines 
+# Note: use $(FC) as the mex Fortran compiler
+MEX  = mex
+
+GENSRC = cbmz_sorgam_Precision.f90  \
+	 cbmz_sorgam_Parameters.f90     \
+	 cbmz_sorgam_Global.f90  
+
+GENOBJ = cbmz_sorgam_Precision.o    \
+	 cbmz_sorgam_Parameters.o       \
+	 cbmz_sorgam_Global.o     
+
+FUNSRC = cbmz_sorgam_Function.f90 
+FUNOBJ = cbmz_sorgam_Function.o 
+
+JACSRC = cbmz_sorgam_JacobianSP.f90  cbmz_sorgam_Jacobian.f90
+JACOBJ = cbmz_sorgam_JacobianSP.o    cbmz_sorgam_Jacobian.o
+
+HESSRC = cbmz_sorgam_HessianSP.f90   cbmz_sorgam_Hessian.f90
+HESOBJ = cbmz_sorgam_HessianSP.o     cbmz_sorgam_Hessian.o
+
+STMSRC = cbmz_sorgam_StoichiomSP.f90 cbmz_sorgam_Stoichiom.f90 
+STMOBJ = cbmz_sorgam_StoichiomSP.o   cbmz_sorgam_Stoichiom.o
+
+UTLSRC = cbmz_sorgam_Rates.f90 cbmz_sorgam_Util.f90 cbmz_sorgam_Monitor.f90
+UTLOBJ = cbmz_sorgam_Rates.o   cbmz_sorgam_Util.o   cbmz_sorgam_Monitor.o
+
+LASRC  = cbmz_sorgam_LinearAlgebra.f90 
+LAOBJ  = cbmz_sorgam_LinearAlgebra.o   
+
+STOCHSRC = cbmz_sorgam_Stochastic.f90 
+STOCHOBJ = cbmz_sorgam_Stochastic.o 
+
+MAINSRC = cbmz_sorgam_Main.f90   cbmz_sorgam_Initialize.f90   cbmz_sorgam_Integrator.f90 cbmz_sorgam_Model.f90
+MAINOBJ = cbmz_sorgam_Main.o     cbmz_sorgam_Initialize.o     cbmz_sorgam_Integrator.o   cbmz_sorgam_Model.o 
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# User: modify the line below to include only the
+#       objects needed by your application
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ALLOBJ = $(GENOBJ) $(FUNOBJ) $(JACOBJ) $(HESOBJ) $(STMOBJ) \
+	 $(UTLOBJ) $(LAOBJ)
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# User: modify the line below to include only the
+#       executables needed by your application
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+all:    exe
+
+exe:	$(ALLOBJ) $(MAINOBJ) 
+	$(FC) $(FOPT) $(ALLOBJ) $(MAINOBJ) $(LIBS) -o cbmz_sorgam.exe
+
+stochastic:$(ALLOBJ) $(STOCHOBJ) $(MAINOBJ)
+	$(FC) $(FOPT) $(ALLOBJ) $(STOCHOBJ) $(MAINOBJ) $(LIBS) \
+	-o cbmz_sorgam_stochastic.exe
+
+mex:    $(ALLOBJ)
+	$(MEX) FC#$(FC) -fortran -O cbmz_sorgam_mex_Fun.f90     $(ALLOBJ)
+	$(MEX) FC#$(FC) -fortran -O cbmz_sorgam_mex_Jac_SP.f90  $(ALLOBJ)
+	$(MEX) FC#$(FC) -fortran -O cbmz_sorgam_mex_Hessian.f90 $(ALLOBJ)
+
+clean:
+	rm -f cbmz_sorgam*.o cbmz_sorgam*.mod \
+	cbmz_sorgam*.dat cbmz_sorgam.exe cbmz_sorgam*.mexglx \
+	cbmz_sorgam.map
+
+distclean:
+	rm -f cbmz_sorgam*.o cbmz_sorgam*.mod \
+	cbmz_sorgam*.dat cbmz_sorgam.exe cbmz_sorgam.map \
+	cbmz_sorgam*.f90 cbmz_sorgam_*.mexglx
+
+cbmz_sorgam_Precision.o: cbmz_sorgam_Precision.f90 
+	$(FC) $(FOPT) -c $<
+
+cbmz_sorgam_Parameters.o: cbmz_sorgam_Parameters.f90 \
+	            cbmz_sorgam_Precision.o
+	$(FC) $(FOPT) -c $<
+
+cbmz_sorgam_Monitor.o: cbmz_sorgam_Monitor.f90 \
+	             cbmz_sorgam_Precision.o
+	$(FC) $(FOPT) -c $<
+
+cbmz_sorgam_Global.o: cbmz_sorgam_Global.f90 \
+	            cbmz_sorgam_Parameters.o cbmz_sorgam_Precision.o
+	$(FC) $(FOPT) -c $<
+
+cbmz_sorgam_Initialize.o: cbmz_sorgam_Initialize.f90  $(GENOBJ) 
+	$(FC) $(FOPT) -c $<
+
+cbmz_sorgam_Function.o: cbmz_sorgam_Function.f90  $(GENOBJ) 
+	$(FC) $(FOPT) -c $<
+
+cbmz_sorgam_Stochastic.o: cbmz_sorgam_Stochastic.f90  $(GENOBJ) 
+	$(FC) $(FOPT) -c $<
+
+cbmz_sorgam_JacobianSP.o: cbmz_sorgam_JacobianSP.f90 $(GENOBJ)
+	$(FC) $(FOPT) -c $<
+
+cbmz_sorgam_Jacobian.o: cbmz_sorgam_Jacobian.f90  $(GENOBJ) cbmz_sorgam_JacobianSP.o
+	$(FC) $(FOPT) -c $<
+
+cbmz_sorgam_LinearAlgebra.o: cbmz_sorgam_LinearAlgebra.f90 $(GENOBJ) cbmz_sorgam_JacobianSP.o
+	$(FC) $(FOPT) -c $<
+
+cbmz_sorgam_Rates.o: cbmz_sorgam_Rates.f90  $(GENOBJ) 
+	$(FC) $(FOPT) -c $<
+
+cbmz_sorgam_HessianSP.o: cbmz_sorgam_HessianSP.f90  $(GENOBJ)
+	$(FC) $(FOPT) -c $<
+
+cbmz_sorgam_Hessian.o:  cbmz_sorgam_Hessian.f90 $(GENOBJ) cbmz_sorgam_HessianSP.o
+	$(FC) $(FOPT) -c $<
+
+cbmz_sorgam_StoichiomSP.o: cbmz_sorgam_StoichiomSP.f90 $(GENOBJ)
+	$(FC) $(FOPT) -c $<
+
+cbmz_sorgam_Stoichiom.o: cbmz_sorgam_Stoichiom.f90  $(GENOBJ) cbmz_sorgam_StoichiomSP.o
+	$(FC) $(FOPT) -c $<
+
+cbmz_sorgam_Util.o: cbmz_sorgam_Util.f90  $(GENOBJ) cbmz_sorgam_Monitor.o
+	$(FC) $(FOPT) -c $<
+
+cbmz_sorgam_Main.o: cbmz_sorgam_Main.f90  $(ALLOBJ) cbmz_sorgam_Initialize.o cbmz_sorgam_Model.o cbmz_sorgam_Integrator.o
+	$(FC) $(FOPT) -c $<
+
+cbmz_sorgam_Model.o: cbmz_sorgam_Model.f90  $(ALLOBJ) cbmz_sorgam_Integrator.o
+	$(FC) $(FOPT) -c $<
+
+cbmz_sorgam_Integrator.o: cbmz_sorgam_Integrator.f90  $(ALLOBJ)
+	$(FC) $(FOPT) -c $<

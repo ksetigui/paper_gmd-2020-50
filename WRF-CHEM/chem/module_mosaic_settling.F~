@@ -1,0 +1,304 @@
+!**********************************************************************************  
+! Louis Marelle, June 2015:  calculate gravitational settling for MOSAIC above the 
+! first level. This module is based on module_mosaic_drydep
+!
+! What this routine needs to do: loop on i j
+! for each i j calculate the column of deposition velocities for each aerosol species
+! then from top to bottom move aerosol from level k to level k-1 (loop from ktop to
+! k=2). Maybe skip this when the sizes & masses are very low (e.g. for bins <=3
+! and/or masses < 1E-6 µ m-3. This routine should be mostly relevant for bins
+! 5 to 8.
+! make sure that this is conserving mass and number, and that cfl like
+! conditions are respected (cap the velocity to avoid this for very large
+! particles, basically vdel(k) * dt should be < to dz (k-1)
+! Make sure that nothing weird happens when moving aerosol numbers betwween
+! vertical levels, especially for aerosol water (is it counted in num_aer ?
+! probably not)
+! DO NOT USE rsub mapping, this assumes that air is at STP, this might be an OK
+! assumption when transporting mass between bins & species at the same level,
+! but it is not OK when transporting mass between levels when temperature and
+! pressure vary). Also, rsub mapping makes everything very confusing
+!
+!lmf look in mixactivate to see how the dry dep is computed
+!lmf cw phase ?
+!
+!lmf When the routine is coded and works (more or less), check that I did not left
+! some old useless variables in the code
+!**********************************************************************************  
+    module module_mosaic_settling
+
+
+    contains
+
+!1- calculate the settling velocities (routine from mosaic_drydep)
+!2- change the concentrations in chem (create a routine based on gocart settling),
+!   except in the first level (already done in mosaic_drydep & mixactivate)
+
+!Be very careful with the units etc.
+!lmf check the program flow, especially that each variable gets an assigned value
+
+!-----------------------------------------------------------------------
+    subroutine mosaic_settling_driver(                                 &
+        t_phy, rho_phy, chem,                                          &
+        ids,ide, jds,jde, kds,kde,                                     &
+        ims,ime, jms,jme, kms,kme,                                     &
+        its,ite, jts,jte, kts,kte                                      )
+
+!lmf : describe all the arguments + units
+    use module_data_mosaic_asect, only:  &
+        dens_water_aer, mw_water_aer, dens_aer, & 
+        dlo_sect, dcen_sect, dhi_sect, volumlo_sect, &
+        volumhi_sect, ai_phase, ncomp_aer, nsize_aer, ntype_aer, &
+        numptr_aer, waterptr_aer, massptr_aer, &
+        lptr_oin_aer
+!dens_aer in (g/cm3)
+!dhi_sect etc. in (cm)
+    use module_configure, only:  num_chem
+	use module_data_mosaic_other ! for pi, mostly
+
+    implicit none
+
+!   subroutine arguments
+    integer, intent(in) ::   &
+        ids, ide, jds, jde, kds, kde,   &
+        ims, ime, jms, jme, kms, kme,   &
+        its, ite, jts, jte, kts, kte
+
+    real, intent(in),   &
+        dimension( ims:ime, kms:kme, jms:jme ) :: &
+        t_phy, rho_phy
+
+    real, intent(inout),   &
+        dimension( ims:ime, kms:kme, jms:jme, 1:num_chem ) :: &
+        chem
+
+!   local variables
+    integer it, jt, kt, idiagaa
+    integer iphase, itype, n, ll, l1
+    real temp
+    real airdens
+    real dumalnsg, dumfact, dummass
+    real rnum
+    real wetdgnum, wetdp, wetdens, wetmass, wetvol, &
+         drydp, drydens, drymass, dryvol 
+    real vsettl_0, vsettl_3
+!   diameters drydp, wetdp etc. are in (cm), volumes are (cm^3/kg air) masses are (g/kg air)
+!   parameters
+    real, parameter :: densdefault = 2.0
+!    real, parameter :: smallmassaa = 1.0e-20 !g/mole air
+!    real, parameter :: smallmassbb = 1.0e-30
+    real, parameter :: smallmassaa = 1.0e-19 ! g/kg air
+    real, parameter :: smallmassbb = 1.0e-29
+    real, parameter :: piover6 = pi/6.0
+    real, parameter :: onethird = 1.0/3.0
+
+!   loop over i and j
+    do jt = jts, jte
+    do it = its, ite
+
+!   Get aerosol sigma logarithm, wet density and wet diameter
+
+    dumalnsg = log( 1.0 ) ! natural logarithm of the geometric standard deviation
+!                           for aerosol number
+
+!   *** for now, just calc vdep_aer for iphase = ai_phase !lmf, check in mixactivate how cw aerosols are removed
+    iphase = ai_phase
+
+    do itype = 1, ntype_aer
+    do n = 1, nsize_aer(itype)
+
+    do kt = kts, kte
+
+      dryvol = 0.0
+      drymass = 0.0 
+  
+      do ll = 1, ncomp_aer(itype) 
+! lm This loop is "summing" chemical compounds; e.g. for bin 1, drymass = bc_a01+oin_a01+... etc and 
+! dryvol = vol_bc_a01+... etc.  Dry dep assumes that bin 1 "real diameters" ((dryvol/(piover6*rnum))**onethird) 
+! can only be larger than dcen_sect (internal mixing is assumed for dry deposition). I think this is why the 
+! dry deposition is capped later in the driver (if bin 8 concentrations are large for N compounds, the equivalent 
+! diameter is going to be ~ (N)^(1/3)*dcen_sect.
+          l1 = massptr_aer(ll,n,itype,iphase)
+          dummass = chem(it,kt,jt,l1)*1000. ! chem is in ug/kg, convert to g/kg air
+          drymass = drymass + dummass
+          dryvol = dryvol + dummass/dens_aer(ll,itype) ! cm3/kg air
+      end do
+  
+      l1 = waterptr_aer(n,itype)
+      dummass = chem(it,kt,jt,l1)*1000. ! chem is in ug/kg, convert to g/kg air
+      wetmass = drymass + dummass
+      wetvol = dryvol + dummass/dens_water_aer ! cm3/kg air
+  
+      l1 = numptr_aer(n,itype,iphase)
+      rnum = chem(it,kt,jt,l1)*1000. ! chem is in #/kg, convert to #/kg air
+  
+      if (drymass .le. smallmassbb) then
+          drydp = dcen_sect(n,itype)
+          drydens = densdefault
+          wetdp = drydp
+          wetdens = drydens
+  
+      else ! (drymass > smallmassbb)
+          if (drymass .le. smallmassaa) then 
+              wetmass = drymass
+              wetvol = dryvol
+          end if
+          drydens = drymass/dryvol ! g/cm3
+          wetdens = wetmass/wetvol ! g/cm3
+  
+          if (rnum .ge. dryvol/volumlo_sect(n,itype)) then 
+          ! lm This is capping the dp diameters to [dlo - dhi],
+          ! I'm guessing the dlo capping will never be used (except in the case of numerical errors or inconsistencies).
+          ! The settling velocity should be higher than in the case of external mixing, but does not assume pure
+          ! internal mixing (or dp would not be capped). Also, this routine is estimating one deposition velocity 
+          ! for settling for all aerosols
+              drydp = dlo_sect(n,itype)
+          else if (rnum .le. dryvol/volumhi_sect(n,itype)) then 
+              drydp = dhi_sect(n,itype) 
+          else
+              drydp = (dryvol/(piover6*rnum))**onethird
+          end if
+  
+          if(abs(wetvol).gt.(1000.*abs(dryvol))) then
+              dumfact=10.0
+          else
+              dumfact=abs(wetvol/dryvol)**onethird
+              dumfact=max(1.0,min(dumfact,10.0))
+          endif
+          wetdp = drydp*dumfact
+  
+      endif !if (drymass .le. smallmassbb)
+  
+      wetdgnum = wetdp * exp( -1.5*dumalnsg*dumalnsg ) !lmf what is this exactly
+  
+!   Get air temperature & density at it, kt, jt
+      temp = t_phy(it,kt,jt)
+      airdens = rho_phy(it,kt,jt)*1.0e-3
+  
+!
+!   Calculate surface resistance and settling velocity for mass (moment 3)
+!   and number (moment 0)
+      call aerosol_depvel_lm(   &
+           wetdgnum, dumalnsg, wetdens,   &
+           temp, airdens,            &
+           vsettl_0, vsettl_3)
+  
+!
+!   diagnostic output
+!
+!   for now always print this
+      idiagaa = 1
+      if (idiagaa>0) print 9310, it, jt, kt, n, itype, iphase,   &
+          dcen_sect(n,itype), drydp, wetdp,   &
+          drydens, wetdens, vsettl_3,   &
+          vsettl_0
+      9310  format( 'aerdep', 3i4, 3i3, 1p, 3e10.2,   &
+            2x, 0p, 2f5.2, 2x, 1p, 2e10.2 )
+
+!lmf pass the vsettl_3 and vsettl_0 to a column vector
+
+    end do !kt
+
+!lmf this is where you would do the deposition itself
+! do kte to 2, calculate factors based on mixactivate or gocart settling
+! multiply chem (i,k,j,(size,type,composition)) * factor(i,k,j,(size,type)) for all compositions and k levels
+! check that the mass is conserved
+
+    end do !size
+    end do !type
+
+
+    end do !it
+    end do !jt
+
+
+    end subroutine mosaic_settling_driver
+
+
+
+
+!------------------------------------------------------------------------
+    subroutine aerosol_depvel_lm(   &
+              dgnum, alnsg, aerodens,   &
+              temp, airdens,            &
+              vsettl_0, vsettl_3 )
+
+! 2015/06/25, Louis Marelle: This routine comes from module_mosaic_drydep.F
+!
+!   computes the gravitational settling velocity term for the 3rd moment
+!   of a log-normal aerosol mode
+!
+!   input parameters
+!    dgnum - geometric mean diameter for aerosol number (cm)
+!    alnsg - natural logarithm of the geometric standard deviation
+!        for aerosol number
+!    aerodens - aerosol density (dgnum and aerodens are for the
+!        actual wet distribution)
+!    temp - temperature (K)
+!    airdens - air density (g/cm^3)
+!   output parameters
+!    vsettl_3 - gravitational settling velocity for 3rd moment (cm/s)
+!    vsettl_0 - gravitational settling velocity for 0th moment (cm/s)
+!    
+!lmf cap the settling velocity according to drydep_driver, use the C factor
+! 
+! 2015/06/25, Louis Marelle: 
+! I removed the calculations of the surface deposition resistances which 
+! were in the original routine since I only calculate settling in the 
+! layers 2 to kte (Settling in the first level is taken into account in 
+! module_mosaic_drydep.F).
+! lmf: the settling routine vash or gocart might be better
+
+    implicit none
+
+!   subroutine arguments
+    real, intent(in) :: &
+        temp, airdens
+
+    real, intent(in) :: &
+        dgnum, alnsg, aerodens
+
+    real, intent(out) :: &
+          vsettl_0, vsettl_3
+
+!   local variables
+!    airkinvisc - air kinematic viscosity (cm^2/s)
+    real airkinvisc
+!   air molecular freepath (cm)
+    real freepath
+    real xknudsen, xknudsenfact, alnsg2, &
+          vsettl_dgnum, aerodiffus_dgnum
+    real pi
+    parameter (pi = 3.1415926536)
+!   gravity = gravitational acceleration in cm/s^2
+    real gravity
+    parameter (gravity = 980.616)
+!   boltzmann constant in erg/deg-K
+    real boltzmann
+    parameter (boltzmann = 1.3807e-16)
+
+    
+!   Calculate the kinetic viscosity and molecular freepath of air
+    airkinvisc = ( 1.8325e-4 * (416.16/(temp+120.0)) *   &
+                      ((temp/296.16)**1.5) ) / airdens
+    freepath = 7.39758e-4 * airkinvisc / sqrt(temp)
+
+    xknudsen = 2.*freepath/dgnum
+    xknudsenfact = xknudsen*1.246
+    alnsg2 = alnsg*alnsg
+
+!   Calculate the deposition velocities
+    vsettl_dgnum = (gravity*aerodens*dgnum*dgnum)/   &
+              (18.*airkinvisc*airdens)
+    vsettl_0 = vsettl_dgnum *   &
+              ( exp(2.*alnsg2) + xknudsenfact*exp(0.5*alnsg2) )
+    vsettl_3 = vsettl_dgnum *   &
+              ( exp(8.*alnsg2) + xknudsenfact*exp(3.5*alnsg2) )
+
+
+    return
+    end subroutine aerosol_depvel_lm
+
+!------------------------------------------------------------------------
+    end module module_mosaic_settling
+

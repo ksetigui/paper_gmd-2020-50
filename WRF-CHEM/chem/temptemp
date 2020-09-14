@@ -1,0 +1,212 @@
+
+active jobs------------------------
+JOBID              USERNAME      STATE NODES   REMAINING            STARTTIME
+
+1216153             jian250    Running    10    00:13:42  Mon Nov 17 20:41:39
+1216125             wang376    Running     4    00:31:14  Mon Nov 17 20:59:11
+1216779             leem142    Running    16    00:57:50  Wed Nov 19 10:55:47
+1217018             piro669    Running    16    00:59:02  Wed Nov 19 19:56:59
+1216199             jian250    Running     2     1:20:45  Mon Nov 17 21:48:42
+1216901             gerc122    Running     2     1:58:42  Wed Nov 19 16:26:39
+1217036             mamu519    Running     2     1:58:59  Wed Nov 19 20:26:56
+1216220             long291    Running     6     3:14:14  Mon Nov 17 23:42:11
+1216918               gpeng    Running     4     3:15:42  Wed Nov 19 17:43:39
+1216722             varg813    Running     1     3:19:13  Wed Nov 19 08:47:10
+1216830             wang826    Running     4     3:30:02  Wed Nov 19 11:57:59
+1216919               gpeng    Running     4     3:30:55  Wed Nov 19 17:58:52
+1216579              d3x141    Running     4     3:46:15  Wed Nov 19 00:14:12
+1216715             varg813    Running     1     4:04:40  Wed Nov 19 08:32:37
+1216844             wang826    Running     4     4:09:45  Wed Nov 19 12:37:42
+1217012             bhas990    Running    20     5:15:51  Wed Nov 19 19:43:48
+1217015             bhas990    Running    20     5:20:13  Wed Nov 19 19:48:10
+1217014             bhas990    Running    20     5:20:13  Wed Nov 19 19:48:10
+1217013             bhas990    Running    20     5:20:13  Wed Nov 19 19:48:10
+1217017             psushko    Running     8     5:25:05  Wed Nov 19 19:53:02
+1217034             psushko    Running     8     5:53:50  Wed Nov 19 20:21:47
+1216588             elna386    Running     7     6:03:22  Wed Nov 19 02:31:19
+1216714             varg813    Running     1     6:04:31  Wed Nov 19 08:32:28
+1216766              d3k958    Running   100     6:18:27  Wed Nov 19 14:46:24
+1216877             knae934    Running     2     6:18:28  Wed Nov 19 14:46:25
+1216883             psushko    Running     8     6:22:12  Wed Nov 19 17:50:09
+1216839             pauk881    Running     1     6:39:36  Wed Nov 19 12:07:33
+1216879             yoon753    Running    16     6:49:55  Wed Nov 19 15:17:52
+1216263             lian850    Running    16     7:06:46  Tue Nov 18 03:34:43
+1216816             huha082    Running     6     7:16:21  Wed Nov 19 11:44:18
+1216265             jian250    Running     1     7:42:38  Tue Nov 18 04:10:35
+1216801             deng249    Running    16     8:53:33  Wed Nov 19 11:21:30
+1216272             verm007    Running    20     8:57:12  Tue Nov 18 05:25:09
+1216273             verm007    Running    20     8:58:42  Tue Nov 18 05:26:39
+1216274             verm007    Running    20     9:00:03  Tue Nov 18 05:28:00
+1216275             verm007    Running    20     9:01:19  Tue Nov 18 05:29:16
+1216277             verm007    Running    20     9:07:35  Tue Nov 18 05:35:32
+1216661             seme134    Running    10     9:08:08  Wed Nov 19 05:36:05
+1216826             huha082    Running    12     9:28:18  Wed Nov 19 17:56:15
+1216832             huha082    Running    12     9:30:53  Wed Nov 19 17:58:50
+1216982              d3j082    Running    16    11:38:53  Wed Nov 19 18:06:50
+1216981             kuma889    Running    12    12:28:23  Wed Nov 19 18:56:20
+1216735             deng249    Running    24    13:07:37  Wed Nov 19 09:35:34
+1216922             kell573    Running    20    13:11:59  Wed Nov 19 17:39:56
+1216924             kell573    Running    20    13:22:10  Wed Nov 19 17:50:07
+1216929             kell573    Running    20    13:23:40  Wed Nov 19 17:51:37
+1216930             kell573    Running    20    13:38:53  Wed Nov 19 18:06:50
+1216980             kuma889    Running    14    13:38:54  Wed Nov 19 18:06:51
+1216757             deng249    Running    24    13:39:39  Wed Nov 19 10:07:36
+1216809             deng249    Running    24    15:13:32  Wed Nov 19 11:41:29
+1216385             wang826    Running     8    15:42:57  Tue Nov 18 12:10:54
+1216421             fang824    Running     2    16:27:34  Tue Nov 18 12:55:31
+1216422             fang824    Running     2    16:27:34  Tue Nov 18 12:55:31
+1216433             leem142    Running    16    18:06:17  Tue Nov 18 14:34:14
+1216833               gpeng    Running    14    18:25:20  Wed Nov 19 14:53:17
+1216423             fang824    Running     2    19:07:14  Tue Nov 18 15:35:11
+1216434             leem142    Running    16    19:17:28  Tue Nov 18 15:45:25
+1216436             leem142    Running    16    19:21:13  Tue Nov 18 15:49:10
+1216936             caiq744    Running     1    19:34:00  Wed Nov 19 16:01:57
+1216463             leem142    Running    12    19:59:14  Tue Nov 18 16:27:11
+1216948             caiq744    Running     1    20:09:06  Wed Nov 19 16:37:03
+1216880             bylaska    Running     8    20:10:59  Wed Nov 19 17:38:56
+1216933             caiq744    Running     1    20:32:05  Wed Nov 19 17:00:02
+1216934             caiq744    Running     1    20:32:05  Wed Nov 19 17:00:02
+1216958             caiq744    Running     1    20:32:05  Wed Nov 19 17:00:02
+1216937             caiq744    Running     1    20:43:19  Wed Nov 19 17:11:16
+1216935             caiq744    Running     1    20:43:19  Wed Nov 19 17:11:16
+1216944             caiq744    Running     1    20:44:30  Wed Nov 19 17:12:27
+1216945             caiq744    Running     1    20:58:35  Wed Nov 19 17:26:32
+1216913             yoon753    Running    16    21:05:58  Wed Nov 19 17:33:55
+1216946             caiq744    Running     1    21:06:29  Wed Nov 19 17:34:26
+1216950             caiq744    Running     1    21:06:29  Wed Nov 19 17:34:26
+1216953             caiq744    Running     1    21:10:59  Wed Nov 19 17:38:56
+1216954             caiq744    Running     1    21:10:59  Wed Nov 19 17:38:56
+1216951             caiq744    Running     1    21:10:59  Wed Nov 19 17:38:56
+1216955             caiq744    Running     1    21:15:42  Wed Nov 19 17:43:39
+1216956             caiq744    Running     1    21:17:07  Wed Nov 19 17:45:04
+1216917             elna386    Running     7    21:22:14  Wed Nov 19 17:50:11
+1216538             fang824    Running     2    21:31:25  Tue Nov 18 17:59:22
+1216926             elna386    Running     7    21:38:54  Wed Nov 19 18:06:51
+1216931             elna386    Running     7    21:38:54  Wed Nov 19 18:06:51
+1216932             elna386    Running     7    21:38:55  Wed Nov 19 18:06:52
+1216498             wang376    Running     4    21:52:23  Tue Nov 18 18:20:20
+1216477             verm007    Running    12    22:14:35  Tue Nov 18 18:42:32
+1216506             wang376    Running     4    22:14:35  Tue Nov 18 18:42:32
+1216985             elna386    Running     7    22:14:55  Wed Nov 19 18:42:52
+1216537             fang824    Running     2    23:10:16  Tue Nov 18 19:38:13
+1216405             knae934    Running     6    23:30:57  Tue Nov 18 19:58:54
+1216504             wang376    Running     4  1:00:19:28  Tue Nov 18 20:47:25
+1216503             wang376    Running     4  1:00:19:28  Tue Nov 18 20:47:25
+1216508             wang376    Running     4  1:00:31:03  Tue Nov 18 20:59:00
+1216512             wang376    Running     4  1:00:32:22  Tue Nov 18 21:00:19
+1216510             wang376    Running     4  1:00:32:22  Tue Nov 18 21:00:19
+1216521             wang376    Running     4  1:01:05:27  Tue Nov 18 21:33:24
+1216524             wang376    Running     4  1:01:35:09  Tue Nov 18 22:03:06
+1216528             wang376    Running     4  1:01:35:11  Tue Nov 18 22:03:08
+1216529             wang376    Running     4  1:01:57:12  Tue Nov 18 22:25:09
+1216530             wang376    Running     4  1:02:14:58  Tue Nov 18 22:42:55
+1216494             leem142    Running    12  1:02:35:43  Tue Nov 18 23:03:40
+1216450             verm007    Running    20  1:03:24:13  Tue Nov 18 23:52:10
+1216609             wang376    Running     4  1:04:13:02  Wed Nov 19 00:40:59
+1216615             wang376    Running     4  1:04:45:22  Wed Nov 19 01:13:19
+1216452             verm007    Running    16  1:05:43:50  Wed Nov 19 02:11:47
+1216637             wang376    Running     4  1:06:40:27  Wed Nov 19 03:08:24
+1216622             long291    Running     6  1:06:52:43  Wed Nov 19 03:20:40
+1216626             long291    Running     6  1:06:53:55  Wed Nov 19 03:21:52
+1216630             long291    Running     6  1:07:00:54  Wed Nov 19 03:28:51
+1216653             long291    Running     6  1:08:49:06  Wed Nov 19 05:17:03
+1216725             kuma889    Running    32  1:09:25:07  Wed Nov 19 08:53:04
+1216664             long291    Running     6  1:09:31:44  Wed Nov 19 05:59:41
+1216666             fang824    Running    96  1:09:57:20  Wed Nov 19 06:25:17
+1216728             kuma889    Running    32  1:10:30:15  Wed Nov 19 08:58:12
+1216740             kuma889    Running    32  1:11:09:19  Wed Nov 19 09:37:16
+1216731             huan903    Running     4  1:12:40:59  Wed Nov 19 09:08:56
+1216745             knae934    Running     9  1:13:14:29  Wed Nov 19 09:42:26
+1216771             caiq744    Running     1  1:14:15:19  Wed Nov 19 10:43:16
+1216772             caiq744    Running     1  1:14:18:21  Wed Nov 19 10:46:18
+1216774             leem142    Running    10  1:14:22:50  Wed Nov 19 10:50:47
+1216775             caiq744    Running     1  1:14:23:21  Wed Nov 19 10:51:18
+1216782             caiq744    Running     1  1:14:30:39  Wed Nov 19 10:58:36
+1216783             caiq744    Running     1  1:14:31:52  Wed Nov 19 10:59:49
+1216785             caiq744    Running     1  1:14:32:56  Wed Nov 19 11:00:53
+1216787             caiq744    Running     1  1:14:34:34  Wed Nov 19 11:02:31
+1216788             caiq744    Running     1  1:14:35:28  Wed Nov 19 11:03:25
+1216789             caiq744    Running     1  1:14:36:17  Wed Nov 19 11:04:14
+1216791             caiq744    Running     1  1:14:37:20  Wed Nov 19 11:05:17
+1216792             caiq744    Running     1  1:14:38:17  Wed Nov 19 11:06:14
+1216793             caiq744    Running     1  1:14:38:54  Wed Nov 19 11:06:51
+1216796             caiq744    Running     1  1:14:43:37  Wed Nov 19 11:11:34
+1216799             zhan783    Running    20  1:14:48:28  Wed Nov 19 11:16:25
+1216800             zhan783    Running    20  1:14:50:54  Wed Nov 19 11:18:51
+1216807             lish966    Running     4  1:15:12:37  Wed Nov 19 11:40:34
+1216811             lish966    Running     8  1:15:13:52  Wed Nov 19 11:41:49
+1216810             lish966    Running     8  1:15:13:52  Wed Nov 19 11:41:49
+1216812             lish966    Running     8  1:15:13:54  Wed Nov 19 11:41:51
+1216814             lish966    Running     4  1:15:14:07  Wed Nov 19 11:42:04
+1216813             lish966    Running     8  1:15:14:07  Wed Nov 19 11:42:04
+1216815             lish966    Running     4  1:15:14:07  Wed Nov 19 11:42:04
+1216817             huan903    Running     8  1:15:17:14  Wed Nov 19 11:45:11
+1216825             caiq744    Running     1  1:15:26:43  Wed Nov 19 11:54:40
+1216855             caiq744    Running     1  1:16:59:16  Wed Nov 19 13:27:13
+1216861             caiq744    Running     1  1:17:14:02  Wed Nov 19 13:41:59
+1216865             caiq744    Running     1  1:17:14:02  Wed Nov 19 13:41:59
+1216862             caiq744    Running     1  1:17:14:02  Wed Nov 19 13:41:59
+1216863             caiq744    Running     1  1:17:14:02  Wed Nov 19 13:41:59
+1216866             caiq744    Running     1  1:17:30:33  Wed Nov 19 13:58:30
+1216868             caiq744    Running     1  1:17:38:18  Wed Nov 19 14:06:15
+1216869             caiq744    Running     1  1:17:39:56  Wed Nov 19 14:07:53
+1216871             caiq744    Running     1  1:17:39:56  Wed Nov 19 14:07:53
+1216872             caiq744    Running     1  1:17:39:56  Wed Nov 19 14:07:53
+1216896             caiq744    Running     1  1:18:25:18  Wed Nov 19 14:53:15
+1216906             caiq744    Running     1  1:18:49:53  Wed Nov 19 15:17:50
+1216908             caiq744    Running     1  1:19:15:26  Wed Nov 19 15:43:23
+1216939             caiq744    Running     1  1:20:09:06  Wed Nov 19 16:37:03
+1216938             caiq744    Running     1  1:20:44:30  Wed Nov 19 17:12:27
+1216971             knae934    Running     1  1:21:22:11  Wed Nov 19 17:50:08
+1216876             mili320    Running    10  1:21:22:12  Wed Nov 19 17:50:09
+1216959             wang376    Running     4  1:21:30:56  Wed Nov 19 17:58:53
+1216964             wang376    Running     4  1:21:38:55  Wed Nov 19 18:06:52
+1216960             wang376    Running     4  1:22:01:46  Wed Nov 19 18:29:43
+1216957             wang376    Running     4  1:22:01:46  Wed Nov 19 18:29:43
+1216961             wang376    Running     4  1:22:02:25  Wed Nov 19 18:30:22
+1216962             wang376    Running     4  1:22:12:58  Wed Nov 19 18:40:55
+1216966             wang376    Running     4  1:22:13:46  Wed Nov 19 18:41:43
+1216965             wang376    Running     4  1:22:13:46  Wed Nov 19 18:41:43
+1217002             wang376    Running     4  1:22:36:09  Wed Nov 19 19:04:06
+1217003             wang376    Running     4  1:22:43:28  Wed Nov 19 19:11:25
+1217006             wang376    Running     4  1:22:49:07  Wed Nov 19 19:17:04
+1217019             mamu519    Running     2  1:23:30:45  Wed Nov 19 19:58:42
+1217020             mamu519    Running     2  1:23:30:53  Wed Nov 19 19:58:50
+1217021             mamu519    Running     2  1:23:31:05  Wed Nov 19 19:59:02
+1217022             mamu519    Running     2  1:23:31:24  Wed Nov 19 19:59:21
+1217023             mamu519    Running     2  1:23:31:30  Wed Nov 19 19:59:27
+1217024             mamu519    Running     2  1:23:31:42  Wed Nov 19 19:59:39
+1217025             mamu519    Running     2  1:23:31:48  Wed Nov 19 19:59:45
+1217027             mamu519    Running     2  1:23:40:45  Wed Nov 19 20:08:42
+1217030             mamu519    Running     2  1:23:53:34  Wed Nov 19 20:21:31
+1216259             long291    Running     6  2:06:47:06  Tue Nov 18 03:15:03
+1216604             zhan084    Running     6  3:00:31:04  Tue Nov 18 20:59:01
+1216849             linw364    Running     1  3:16:43:50  Wed Nov 19 13:12:47
+1216850             linw364    Running     1  3:16:45:21  Wed Nov 19 13:14:18
+1216851             linw364    Running     1  3:16:45:51  Wed Nov 19 13:14:48
+1216852             linw364    Running     1  3:16:46:34  Wed Nov 19 13:15:31
+1216857             linw364    Running     1  3:17:00:56  Wed Nov 19 13:29:53
+1216858             linw364    Running     1  3:17:38:56  Wed Nov 19 14:07:53
+1216859             linw364    Running     1  3:17:58:58  Wed Nov 19 14:27:55
+1216860             linw364    Running     1  3:18:25:17  Wed Nov 19 14:54:14
+
+187 active jobs       22880 of 23040 processors in use by local jobs (99.31%)
+                      1430 of 1440 nodes active      (99.31%)
+
+eligible jobs----------------------
+JOBID              USERNAME      STATE NODES     WCLIMIT            QUEUETIME
+
+
+0 eligible jobs   
+
+blocked jobs-----------------------
+JOBID              USERNAME      STATE NODES     WCLIMIT            QUEUETIME
+
+1216878             fang824       Idle    96  2:00:00:00  Wed Nov 19 14:20:39
+1216882             fang824       Idle    64  2:00:00:00  Wed Nov 19 14:23:03
+1217035             mamu519       Idle     5    12:00:00  Wed Nov 19 20:22:53
+
+3 blocked jobs   
+
+Total jobs:  190
+

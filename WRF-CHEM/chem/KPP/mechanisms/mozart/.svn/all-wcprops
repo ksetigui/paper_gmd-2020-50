@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/wrfchem/!svn/ver/746/branches/amt/chem/KPP/mechanisms/mozart
+END
+mo_usrrxt.F90
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/wrfchem/!svn/ver/746/branches/amt/chem/KPP/mechanisms/mozart/mo_usrrxt.F90
+END
+mozart.spc
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/wrfchem/!svn/ver/746/branches/amt/chem/KPP/mechanisms/mozart/mozart.spc
+END
+mozart.kpp
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/wrfchem/!svn/ver/746/branches/amt/chem/KPP/mechanisms/mozart/mozart.kpp
+END
+mozart.def
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/wrfchem/!svn/ver/746/branches/amt/chem/KPP/mechanisms/mozart/mozart.def
+END
+atoms_red
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/wrfchem/!svn/ver/517/branches/amt/chem/KPP/mechanisms/mozart/atoms_red
+END
+mozart_wrfkpp.equiv
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/wrfchem/!svn/ver/746/branches/amt/chem/KPP/mechanisms/mozart/mozart_wrfkpp.equiv
+END
+mozart.eqn
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/wrfchem/!svn/ver/745/branches/amt/chem/KPP/mechanisms/mozart/mozart.eqn
+END
